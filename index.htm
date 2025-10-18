@@ -1,0 +1,766 @@
+<html>
+<head>
+	<title>Random text generator for Morse code practice &copy;LZ3NY v3.8/24-10-2024</title>
+    <meta name="robots" content="index, follow">
+    <meta http-equiv="content-type" content="text/html;UTF-8">
+    <meta http-equiv="cache-control" content="cache">
+    <meta http-equiv="content-language" content="en">
+    <meta name="description" content="Morse code words training generator. Learn morse code sending and receiving easy way. One page useful tool for radio operators and hams." />
+    <meta name="keywords" content="morse,code,training,generator,radio,ham,cw,telegraph,sending,receiving,straight,key" />
+    <meta name="author" content="Dimitar Krastev, LZ3NY" />
+		<link href='https://fonts.googleapis.com/css?family=Source Code Pro' rel='stylesheet'>
+		<link href='https://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet'>
+    <link rel="alternate" hreflang="x-default" href="https://cw.lz3ny.info" />
+    
+<style type="text/css">
+@media screen {
+body {
+ background-color: silver;
+ font-family:verdana,arial,helvetica;
+ //font-size: large;
+}
+
+#menu a,#menu a:visited,#menu a:hover {
+  //font-size: large;
+  text-decoration: none;
+  color: blue;	
+  font-weight:700;
+  font-family: verdana, arial,helvetica;
+  padding: 0.5em;
+  max-width:600px;
+}
+
+#links a,#links a:visited,#links a:hover {
+  font-size: small;
+  text-decoration: none;
+  color: blue;	
+  font-family: verdana, arial,helvetica;
+  padding-bottom: 4px;
+  
+}
+
+#menu {
+   background-color: silver;
+    position: absolute;
+  # top: 50;
+  # margin-bottom: 30px;
+   padding-left: 50;
+   //font-size: 16;
+   line-height: 2;
+}
+
+#letters {
+   border-radius: 25px;
+   background-color: white;
+   padding: 35;
+   letter-spacing: 3px;
+}
+
+#letters_container {
+   border-radius: 25px;
+   position: absolute;
+   top:340;
+   margin-top:40px;
+   margin-left: 50;
+   max-width: 720px;
+   width: 60%;
+   font-family:'Source Code Pro',monospace;
+   font-size: xx-large;
+}
+
+#links {
+   border-radius: 15px;
+   font-family:verdana,arial,helvetica;
+   background-color: white;
+   position: relative;
+   top: 10;
+   font-size: small;
+}
+
+#description {
+   border-radius: 25px;
+   background-color: white;
+   font-family:verdana,arial,helvetica;
+   font-size: 12;
+   position: absolute;
+   top: 30;
+   left: 80%;
+   height: 100%;
+   width: 18%; 
+   padding-left: 30;
+   padding-top: 30;
+}
+
+#controls {
+   background-color: white;
+   font-family:verdana,arial,helvetica;
+   //position: relative;
+}
+
+input,select{
+-webkit-border-radius: 5px;
+-moz-border-radius: 5px;
+border-radius: 5px;
+border: 1px;
+color: blue;
+}
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+  /*border-bottom: 1px dotted black;*/
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 160px;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -60px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tooltip .tooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #555 transparent transparent transparent;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+
+#actions {
+    margin-top: 15px;
+#    margin-bottom:50px;
+#    background-color:#FFEECC;
+}
+}
+
+@media print {
+ html, body {
+    width: 210mm;
+    height: 297mm;
+ }
+ #letters {
+   border-radius: 25px;
+   background-color: white;
+   padding: 35px;
+   letter-spacing: 3px;
+   width: 960px;
+   font-family:'Source Code Pro',monospace;
+   font-size: 48px;
+   display: block;
+ }
+ #letters_container {
+   border-radius: 25px;
+   position: absolute;
+   top:250px;
+   margin-left: 30px;
+   width: 960px;
+   font-family:'Source Code Pro',monospace;
+   font-size: 48px;
+   display: block;
+ }
+}
+
+</style>
+
+<script>
+function printDiv(divName) {
+     var printContents = document.getElementById(divName).innerHTML;
+     var originalContents = document.body.innerHTML;
+     document.body.innerHTML = printContents;
+     window.print();
+     document.body.innerHTML = originalContents;
+}
+
+
+function myFunction(selectTag) {
+    var listValue = selectTag.options[selectTag.selectedIndex].text;
+    document.getElementById("letters").style.fontFamily = listValue;
+}
+
+function actualString(len, charSet) {
+    var randomString = '';
+		// If added any weighted chars in the box will append them to charSet string
+    charSet+=document.getElementById("weighted_box").value;
+    for (var i = 0; i < len; i++) {
+        var randomPoz = Math.floor(Math.random() * charSet.length);
+        if ( document.getElementById("rpt_checkbox").checked == true ) {
+        	for (j=0;j<=4;j++){
+        		randomString += charSet.substring(randomPoz,randomPoz+1);
+        		i=i+5;
+    			}
+    		} else {
+        	randomString += charSet.substring(randomPoz,randomPoz+1);
+    		}
+    }
+    return randomString;
+}
+
+function randomString(len, charSet) {
+    charSet = charSet || 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+    return actualString(len, charSet);
+}
+
+function randomNumString(len, charSet) {
+    charSet = charSet || 'Ø123456789';
+    return actualString(len, charSet);
+}
+
+function randomMixed(len, charSet) {
+    charSet = charSet || 'ABCDEFGHIJKLMNOPQRSTUVWXYZØ123456789';
+    return actualString(len, charSet);
+}
+
+function randomCyr(len, charSet) {
+    charSet = charSet || 'АБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЬЮЯ';
+    return actualString(len, charSet);
+}
+
+function randomCustom(len, charSet) {
+	if (charSet && charSet.length > 0)
+    		return actualString(len, charSet);
+    if (document.getElementById("textbox_id").value == "") {
+	alert("please fill in custom characters on the right");
+	return;
+    }
+    charSet = charSet || document.getElementById("textbox_id").value;
+    charSet = charSet.replace(/\s+/g, '');
+    return actualString(len, charSet);
+}
+
+// global vars for window refresh
+var current_type = "";
+var current_custom = "";
+
+
+function generate(mytype, custom) {
+  // assemble the text
+  current_type = mytype;
+
+  if ( current_custom != "" ) {
+     custom = current_custom;
+  }
+  var my_text = "";
+  var groups_cnt = document.getElementById("grpcnt").value;
+
+  for (row=0; row < 10; row++) {
+    for (i=0; i < groups_cnt; i++) {
+	var randomValue;
+	if ( mytype == 'letters') {
+	   randomValue = randomString(5);
+	} else if ( mytype == 'numbers') {
+	   randomValue = randomNumString(5);
+	} else if ( mytype == 'custom') {
+	   randomValue = randomCustom(5, custom);
+	} else if ( mytype == 'cyrillic') {
+	   randomValue = randomCyr(5); 
+	} else {
+	   randomValue = randomMixed(5);
+	}
+	my_text += randomValue.toUpperCase()
+        my_text += ' '
+    }
+        my_text += '\n'
+  }
+   if (mytype == 'prav') {
+	   my_text = document.getElementById("mytx").value.toUpperCase();
+           if (my_text == "") {
+	       alert("please fill in on right text to be played");
+	       return;
+           }
+   }
+   if (my_text == '') return;
+   document.getElementById('letters').innerHTML = my_text;
+   document.getElementById('letters').style.display = 'block';
+}
+</script>
+
+
+<script  type="text/javascript"> 
+// Adapted from https://www.rosettacode.org/wiki/Morse_code#JavaScript
+class Player {
+	constructor() {
+
+		this.output=true;
+		this.speed = this.speedWidget?(this.speedWidget.value):10;
+		this.tone  = this.toneWidget?this.toneWidget.value:350;
+		this.volume= this.volumeWidget?this.volumeWidget.value:25;
+		// morsecode
+		this.code = {
+			a: '._',    b: '_...',  c: '_._.',  d: '_..',   e: '.',     f: '.._.',
+			g: '__.',   h: '....',  i: '..',    j: '.___',  k: '_._',   l: '._..',
+			m: '__',    n: '_.',    o: '___',   p: '.__.',  q: '__._',  r: '._.',
+			s: '...',   t: '_',     u: '.._',   v: '..._',  w: '.__',   x: '_.._',
+			y: '_.__',  z: '__..',  0: '_____', 1: '.____', 2: '..___', 3: '...__',
+			4: '...._', 5: '.....', 6: '_....', 7: '__...', 8: '___..', 9: '____.',
+      ø: '_____', '=':'_..._', '/':'_.._.', '.':'._._._', ',':'__..__', '+':'._._.', 
+			'?':'..__..','@':'.__._.', '-':'_...._', '&':'._...', 'а':'._','б':'_...',
+			'в':'.__','г':'__.', 'д':'_..',  'е':'.', 'ж':'..._', 'з':'__..', 'и':'..',  
+			'й':'.___','к':'_._', 'л':'._..', 'м':'__', 'н':'_.', 'о':'___',  'п':'.__.',
+			'р':'._.','с':'...', 'т':'_',    'у':'.._',  'ф':'.._.', 'х':'....', 'ц':'_._.',
+			'ч':'___.','ш':'____','щ':'__._', 'ъ':'_.._', 'ь':'_.__', 'ю':'..__', 'я':'._._', 'э':'..-..'
+		};
+		this.active = false;
+	}
+	init() {
+		// widgets
+		this.speedWidget = document.getElementById("slider_speed");
+		this.toneWidget = document.getElementById("slider_tone");
+		this.volumeWidget = document.getElementById("slider_volume"); 
+		this.outputActive = document.getElementById("outputActive"); 
+
+//this.chargap = document.getElementById("chargap");
+
+		this.output=true;
+		this.speed = this.speedWidget?(this.speedWidget.value):10;
+		this.tone  = this.toneWidget?this.toneWidget.value:351;
+		this.volume= this.volumeWidget?this.volumeWidget.value:25;
+	}
+	stop() {
+	    if (this.active) {
+		this.active = false;
+		this.globalAudioContext.close();
+		if (this.finishTimer) {
+			clearTimeout(this.finishTimer)
+			this.finishTimer = null;
+		}
+		if (this.timeLeftTimer) {
+			clearTimeout(this.timeLeftTimer)
+			this.timeLeftTimer = null;
+			var place = document.getElementById("time_left");
+			if (place) {
+				place.innerHTML = "n/a";
+			}
+		}
+	    }
+	}
+	play() {
+	    this.init();
+	    this.stop();
+	    this.morsecode();
+	}
+	setchargap(chgp){
+		this.chargap = chgp;
+		this.update();
+	}
+	setText(mystr) {
+	    	this.text=' vvv= '+mystr.replace('<br>','') + '+';
+	};
+
+	setSpeed(val) {
+		this.speed = val;
+		this.update();
+	}
+	setTone(val) {
+		this.tone = val;
+		if (this.active) {
+			this.osci.frequency.value = val;
+		}
+	}
+	setVolume(val) {
+		this.volume = val;
+		this.update();
+	}
+
+	update() {
+		if (!this.active) return;
+		var now = this.globalAudioContext.currentTime;
+		this.globalAudioContext.suspend();
+		this.gain.gain.cancelScheduledValues(now);
+		var index = this.schedule.findIndex((element) => element > now);
+		this.schedule.splice(index, this.schedule.length-index);
+		this.time = now;
+		var unit = unit ? unit : (60000.0/(this.speed*50.0))/1000.0; // in ms
+		this.makecode(index, unit);
+		if (this.output) {
+			this.globalAudioContext.resume();
+		}
+	}
+
+	morsecode(text, unit, freq) {
+		'use strict';
+		this.globalAudioContext = new AudioContext();
+		var mytone  = this.tone;
+		// default unit based on selected WPM 
+		unit = unit ? unit : (60000.0/(this.speed*50.0))/1000.0; // in ms;
+		freq = freq ? freq : mytone;
+		var time = this.globalAudioContext.currentTime;
+		this.schedule = new Array();
+	
+		// create: oscillator, gain, destination
+		this.osci = this.globalAudioContext.createOscillator();
+		this.osci.frequency.value = freq;
+		this.gain = this.globalAudioContext.createGain();
+		this.gain.gain.value = 0;
+		var dest = this.globalAudioContext.destination;
+		// connect: oscillator -> gain -> destination
+		this.osci.connect(this.gain);
+		this.gain.connect(dest);
+
+		// start oscillator
+		this.time = time;
+		this.basetime = time;
+		this.osci.start(time);
+
+		this.makecode(0, unit);
+		this.active = true;
+		this.timeLeftTimer = setTimeout( this.updateTimeLeft, 200, this); 
+	}
+	currentChars() {
+		var str = "";
+		if (this.active) {
+			str+=Math.ceil(this.time-this.globalAudioContext.currentTime)+"s&nbsp;"
+			var now = this.globalAudioContext.currentTime;
+			var index = this.schedule.findIndex((element) => element > now);
+			for (var i = 0; i < 8; i++) {
+				if (i+index >= this.text.length) {
+					str+="<end>";break;
+				}
+				str+= this.text[index+i];
+			}
+		}
+		return str;
+	}
+	updateTimeLeft(arg) {
+		var widget = document.getElementById("time_left");
+		var pThis = (arg?arg:this);
+		if (widget) {
+			widget.innerHTML = pThis.currentChars();
+			pThis.timeLeftTimer = setTimeout( pThis.updateTimeLeft, 200, pThis);
+		}
+	}
+	// generate code for text staring from index position
+	makecode(index, unit) {
+		var data = this.text;
+		// clear finish hook so that a new one is generated based on new timings
+		if (this.finishTimer) {
+			clearTimeout(this.finishTimer)
+			this.finishTimer = null;
+		}
+		// begin from index position
+		this.index = index;
+		for (var i = index; i <= data.length; i ++) {
+			var codedata = data.substr(i, 1).toLowerCase();
+			codedata = this.code[codedata];
+			if ( codedata == "Ø" ) {
+				codedata = "0";
+			}
+			// recognised character
+			if (codedata !== undefined) {
+				this.maketime(codedata, this.time, unit);
+			}
+			// unrecognised character
+			else {
+			//	gap between words
+				this.time += unit * 7;
+			}
+			this.schedule.push(this.time);
+		}
+		// preset a finish hook
+		this.finishTimer = setTimeout(
+			()=>{
+				console.log('finish');
+				player.stop();
+			}, (this.time-this.globalAudioContext.currentTime)*1000);
+	}
+
+	// generate time for code
+	maketime(data, time, unit) {
+		for (var i = 0; i <= data.length; i ++) {
+			var timedata = data.substr(i, 1);
+			timedata = (timedata === '.') ? 1 : (timedata === '_') ? 3 : 0;
+			timedata *= unit;
+			if (timedata > 0) {
+				this.maketone(time, timedata, unit);
+				time += timedata;
+				// tone gap
+				time += unit;
+			}
+		}
+		// gap between characters
+		if (!this.chargap) {
+			this.chargap = document.getElementById('chargap').value;
+			this.update();
+		}
+		time += unit * this.chargap;
+		this.time=time;
+	}
+
+	// generate tone for time
+	maketone(time, length, unit) {
+		var start = time;
+		var stop = time + length;
+		// filter: envelope the tone slightly (todo: use voulme)
+		this.gain.gain.linearRampToValueAtTime(0, start);
+		this.gain.gain.linearRampToValueAtTime(1.0*this.volume/100.0, start + (unit / 8));
+		this.gain.gain.linearRampToValueAtTime(1.0*this.volume/100.0, stop - (unit / 16));
+		this.gain.gain.linearRampToValueAtTime(0, stop);
+	}
+
+	toggleOutput() {
+		if (!this.active) return;
+		if (this.output) {
+			this.globalAudioContext.suspend();
+		} else {
+			this.globalAudioContext.resume();
+		}	
+		this.output = !this.output;
+	}	
+} // class
+
+
+var player = new Player();
+
+function play() {
+	player.setText(document.getElementById('letters').innerHTML);
+	player.play();
+}
+
+function stop() {
+	player.stop();
+}
+
+// -->
+</script>
+
+</head>
+
+<body  onload="generate('letters')">
+	<div style="text-align:center;font-size:12;"><H1>MORSE CODE TEXT GENERATOR</H1></div>
+	
+<div id="menu">
+Generate:<br>
+<div class="tooltip" id="ltr">
+		<span class="tooltiptext">Latin letters mixed.</span>
+		<a href="#" onclick="generate('letters');">LETTERS</a>&nbsp;&nbsp;
+</div>
+
+<div class="tooltip" id="nmb">
+		<span class="tooltiptext">Numbers mixed 0-9.</span>
+		<a href="#" onclick="generate('numbers');">NUMBERS</a>&nbsp;&nbsp;
+</div>
+
+<div class="tooltip" id="mxt">
+		<span class="tooltiptext">Mixed latin letters and numbers 0-9.</span>
+		<a href="#" onclick="generate('mixed');">MIXED</a>&nbsp;&nbsp;
+</div>
+<div class="tooltip" id="cyr">
+		<span class="tooltiptext">Cyrillic letters mixed.</span>
+		<a href="#" onclick="generate('cyrillic');">CYRILLIC</a>&nbsp;&nbsp;&nbsp;&nbsp;
+</div>
+&nbsp;&nbsp;&nbsp;<!--label for="oso_select">Predefined:</label-->
+<select name="list" id="oso_select" value=""><option value="">pre-defined</option></select>
+<script>
+	document.addEventListener('DOMContentLoaded', 
+	function() {
+		var oso_table = ['ФОЬП', 'ДЛЖК', 'ВАРМ', 'ЩНГЪ', 'БУСШ', '12345', '67890', 'ЦЧЮЙ', 'ЯЗХИ', 'ЕТ', '?.,'];
+		oso_select = document.getElementById("oso_select");
+		for (var i = 0, str = ""; i < oso_table.length; i++) {
+			var op = document.createElement('option');
+			op.appendChild(document.createTextNode(((i>0)?'+':'')+oso_table[i]));
+			str+=oso_table[i];
+			op.value = str;
+			oso_select.appendChild(op);
+		}
+		oso_select.onchange = function() {
+                        current_custom = oso_select.options[oso_select.selectedIndex].value;
+			generate('custom', current_custom);
+		};
+	} , false);
+</script>
+<br>
+<div class="tooltip" id="weightedbox">
+	<span class="tooltiptext">Enter symbols you want to see more in the generated text, then click on LETTERS or NUMBERS.</span>
+&nbsp;&nbsp;WEIGHTED CHARS&nbsp;&nbsp;<input style="padding-left:8px;" placeholder="Enter weighted characters" type="text" size=25 id="weighted_box"></input>
+
+</div>
+<br>
+<div class="tooltip" id="mixed_chars">
+		<span class="tooltiptext">Whole text will be generated, using only those symbols, then click on LETEERS</span>
+<a href="#" onclick="current_custom='';generate('custom');">CUSTOM CHARS - MIXED</a>&nbsp;&nbsp;<input style="padding-left:8px;" placeholder="Enter custom characters" type="text" size=25 id="textbox_id"></input>
+&nbsp;&nbsp;&nbsp;&nbsp;
+</div>
+<br>
+<div class="tooltip" id="prav_text">
+		<span class="tooltiptext">We will transmit exactly the text entered here.</span>
+<a href="#" onclick="current_custom='';generate('prav');">PLAY CUSTOM TEXT</a>&nbsp;&nbsp;<input style="padding-left:8px;" placeholder="Enter custom text" type="text" maxlength="300" size="50" id="mytx">
+</div>
+
+	<div id='actions'>
+		<a href="#" onclick="play();" style="color:green">PLAY</a>&nbsp;&nbsp;
+		<a href="#" onclick="stop();" style="color:red">RESET</a>&nbsp;&nbsp;
+		<a href="#" onclick="player.toggleOutput();" style="color:yellow">PAUSE/RESUME</a> &nbsp;
+		<div class="tooltip" id="prt">
+			<span class="tooltiptext">Print following text on paper.</span>
+			<a href="#" onclick="printDiv('letters_container')" style="color:white">PRINT</a>
+		</div>
+	</div>
+</div> <!-- div menu -->
+
+<div id="letters_container">
+  <div id="letters">
+  </div>
+</div>
+
+
+
+<div id="description">
+
+<div id="controls">
+<p>
+Groups: &nbsp;
+<select id="grpcnt" onchange="generate(current_type);">
+<option value="1">10</option>
+<option value="2">20</option>
+<option value="3">30</option>
+<option value="4">40</option>
+<option selected value="5">50</option>
+<option value="6">60</option>
+<option value="7">70</option>
+<option value="8">80</option>
+<option value="9">90</option>
+<option value="10">100</option>
+</select>
+&nbsp;&nbsp;&nbsp;&nbsp;char space
+<select id="chargap" onchange="player?player.setchargap(this.value):2;" onload="player?player.setchargap('2');">
+<option selected value="2">2</option>
+<option value="3">3</option>
+<option value="4">4</option>
+<option value="5">5</option>
+<option value="6">6</option>
+<option value="7">7</option>
+<option value="8">8</option>
+<option value="9">9</option>
+<option value="10">10</option>
+<option value="11">11</option>
+<option value="12">12</option>
+<option value="13">13</option>
+<option value="14">14</option>
+<option value="15">15</option>
+<option value="16">16</option>
+<option value="17">17</option>
+<option value="18">18</option>
+<option value="19">19</option>
+<option value="20">20</option>
+<option value="21">21</option>
+<option value="22">22</option>
+<option value="23">23</option>
+<option value="24">24</option>
+<option value="25">25</option>
+<option value="26">26</option>
+<option value="27">27</option>
+<option value="28">28</option>
+<option value="29">29</option>
+<option value="30">30</option>
+<option value="31">31</option>
+<option value="32">32</option>
+<option value="33">33</option>
+<option value="34">34</option>
+<option value="35">35</option>
+<option value="36">36</option>
+<option value="37">37</option>
+<option value="38">38</option>
+<option value="39">39</option>
+<option value="40">40</option>
+<option value="41">41</option>
+<option value="42">42</option>
+<option value="43">43</option>
+<option value="44">44</option>
+<option value="45">45</option>
+<option value="46">46</option>
+<option value="47">47</option>
+<option value="48">48</option>
+<option value="49">49</option>
+<option value="50">50</option>
+</option>
+</select>
+</p>
+
+<p>
+<div id="rpt">
+		<input type="checkbox" id="rpt_checkbox" unchecked> 5 char repeat</input>
+	</div>
+</p>
+
+Speed(wpm) PARIS <div id="speed_div">20</div>
+<input type=range id="slider_speed" min=5 max=50 value=20></input>
+
+<script>
+	slider_speed = document.getElementById("slider_speed");
+	speed_div = document.getElementById("speed_div");
+	speed_div.innerHTML = slider_speed.value;
+	
+	slider_speed.oninput = function() {
+		speed_div.innerHTML = this.value;
+	}	
+	slider_speed.onchange = function() {
+		player?player.setSpeed(this.value):0;
+	}
+</script>
+<br>
+<!--br>
+Time left(s): <div id="time_left">n/a</div-->
+<br>
+
+Output level <div id="volume_div">25</div>
+<input type=range id="slider_volume" min='1' max='100' value=25></input>
+<script>
+	slider_volume = document.getElementById("slider_volume");
+	volume_div = document.getElementById("volume_div");
+	volume_div.innerHTML = slider_volume.value;
+	
+	slider_volume.oninput = function() {
+		volume_div.innerHTML = this.value;
+	}
+	slider_volume.onchange = function() {
+		player?player.setVolume(this.value):0;
+	}
+</script>
+<br>
+<br>
+Tone(Hz) <div id="tone_div">350</div> 
+<input type=range id="slider_tone" min=250 max=900 value=350></input>
+<script>
+	slider_tone = document.getElementById("slider_tone");
+	tone_div = document.getElementById("tone_div");
+	tone_div.innerHTML = slider_tone.value;
+	
+	slider_tone.oninput = function() {
+		tone_div.innerHTML = this.value;
+		player?player.setTone(this.value):0;
+	}
+</script>
+	<br>
+</div>
+
+<div id="links">
+<H4><u>Interesting Videos</u></h4>
+<a href="https://www.youtube.com/watch?v=Li8Hiwbc664" target="_blank">Learn MORSE code (part 1)</a>
+<br><a href="https://www.youtube.com/watch?v=C8q57EQ_3SQ" target="_blank">Learn MORSE code (part 2)</a>
+<br><a href="https://www.youtube.com/watch?v=XjupJslRj5E" target="_blank">How to send morse code, right way</a>
+<br><a href="https://www.youtube.com/watch?v=DQj74Y2H8xQ" target="_blank">Hand sending</a>
+<br>
+<H4><u>Interesting Websites</u></H4>
+<a href="https://mitxela.com/projects/morse_code_practice_tool" target="_blank">Morse Practice Tool @mitxela.com</a>
+<br><a href="http://aa9pw.com/morsecode/" target="_blank">AA9PW Morse Code Practice</a>
+
+
+</body>
+</html>

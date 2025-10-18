@@ -287,7 +287,7 @@ function generate(mytype, custom) {
            }
    }
    if (my_text == '') return;
-   document.getElementById('letters').innerHTML = my_text;
+   document.getElementById('letters').innerText = my_text;
    document.getElementById('letters').style.display = 'block';
 }
 </script>
@@ -529,7 +529,7 @@ class Player {
 var player = new Player();
 
 function play() {
-	player.setText(document.getElementById('letters').innerHTML);
+	player.setText(document.getElementById('letters').innerText);
 	player.play();
 }
 
